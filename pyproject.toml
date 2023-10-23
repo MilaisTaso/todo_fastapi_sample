@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "todo-fastapi"
+version = "0.1.0"
+description = ""
+authors = ["Authoer <sample@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.103.2"
+uvicorn = "^0.23.2"
+pydantic = "^2.4.2"
+pydantic-settings = "^2.0.3"
+black = "^23.10.0"
+mypy = "^1.6.1"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+sqlalchemy = "^2.0.22"
+psycopg2 = "^2.9.9"
+asyncpg = "^0.28.0"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0

@@ -1,0 +1,27 @@
+import uuid
+from datetime import datetime
+
+from sqlalchemy import DateTime, String, func, orm
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql.functions import current_timestamp
+
+
+class Base(orm.DeclarativeBase):
+    """Base database model."""
+
+    id: orm.Mapped[uuid.UUID] = orm.mapped_column(
+        UUID,
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    created_at: orm.Mapped[datetime] = orm.mapped_column(
+        DateTime,
+        nullable=False,
+        server_default=current_timestamp(),
+    )
+    updated_at: orm.Mapped[datetime] = orm.mapped_column(
+        DateTime,
+        nullable=False,
+        default=current_timestamp(),
+        onupdate=func.utc_timestamp(),
+    )
