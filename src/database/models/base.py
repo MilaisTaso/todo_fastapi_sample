@@ -23,5 +23,5 @@ class Base(orm.DeclarativeBase):
         DateTime,
         nullable=False,
         default=current_timestamp(),
-        onupdate=func.utc_timestamp(),
+        onupdate=func.now(),
     )
