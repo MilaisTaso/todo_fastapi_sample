@@ -3,7 +3,7 @@ from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import DateTime, String, Text
+from sqlalchemy import DateTime, String, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.models.base import Base
@@ -18,6 +18,7 @@ class TodosOrm(Base):
         DateTime,
         nullable=True,
     )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
 
     def __repr__(self) -> str:
         return (
