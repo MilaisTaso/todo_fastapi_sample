@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     """App settings."""
 
     PROJECT_NAME: str = "todo_fastapi"
+    DEBUG: bool = os.getenv("DEBUG") or False
 
     # データベース
     DB_USER: str | None = os.getenv("DB_USER")

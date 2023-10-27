@@ -1,22 +1,32 @@
 from typing import Dict
 
+from debug_toolbar.middleware import DebugToolbarMiddleware
 from fastapi import FastAPI
 
-from src.api.v1.endpoints.todo import router as todo_router
-from src.api.v1.endpoints.auth import router as auth_router
-from src.config import settings
+from src import api
+from src.core.config import settings
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     docs_url="/docs",
     openapi_url="/openapi.json",
+    debug=settings.DEBUG or False,
 )
 
-# ルーティング情報をappに追加
-app.include_router(todo_router, prefix="/api")
-app.include_router(auth_router, prefix="api")
+# 各エンドポイントの追加は各ディレクトリの__init__.pyへ
+app.include_router(
+    router=api.router,
+    prefix="/api",
+)
+
+# デバックツールの導入
+if settings.DEBUG:
+    app.add_middleware(
+        DebugToolbarMiddleware,
+        panels=["debug_toolbar.panels.sqlalchemy.SQLAlchemyPanel"],
+    )
 
 
-@app.get("/")
+@app.get("/", tags=["root"])
 def root() -> Dict[str, str]:
-    return {"detail": "Your Request Successful"}
+    return {"application_name": settings.PROJECT_NAME}
