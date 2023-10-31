@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     # トークン関係
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-    API_GATEWAY_STAGE_PATH: str = ""
+    API_GATEWAY_STAGE_PATH: str = "/api"
     SECRET_KEY: str | None = os.getenv("SECRET_KEY")
 
     model_config = SettingsConfigDict(

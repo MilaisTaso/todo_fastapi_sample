@@ -10,7 +10,7 @@ from src.core.lib.auth import create_access_token
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
 from src.repository.dependencies import get_repository
-from src.repository.user import UserRepository
+from src.repository.crud.user import UserRepository
 from src.schemas.response.token import Token
 
 router = APIRouter()
@@ -18,7 +18,7 @@ router = APIRouter()
 user_repository = Annotated[UserRepository, Depends(get_repository(UserRepository))]
 
 
-@router.post("/login", status_code=status.HTTP_200_OK)
+@router.post("/login", status_code=status.HTTP_200_OK, response_model=Token)
 async def login_access_token(
     user_repo: user_repository,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],

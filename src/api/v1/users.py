@@ -6,7 +6,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
 from src.repository.dependencies import get_repository
-from src.repository.user import UserRepository
+from src.repository.crud.user import UserRepository
 from src.schemas.requests.user import UserRequest
 from src.schemas.response.user import UserResponse
 

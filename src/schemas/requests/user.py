@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import EmailStr, Field, field_serializer
+from pydantic import ConfigDict, EmailStr, Field, field_serializer
 
 from src.core.lib.auth import hashed_convert
 from src.schemas.base import BaseRequestModel
@@ -18,6 +18,10 @@ class UserRequest(BaseRequestModel):
     email: EmailStr
     hashed_password: str = Field(min_length=8, max_length=20)  # ハッシュにする前のパスワード
     is_admin: bool = Field(default=False)
+    
+    model_config = ConfigDict(
+        frozen=False, # __init__で値を生成するため
+    )
 
     # dictへ変換する際にパスワードをハッシュ化する
     @field_serializer("hashed_password")

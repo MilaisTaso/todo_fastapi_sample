@@ -16,8 +16,9 @@ from src.errors.messages import ErrorMessage
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ALGORITHM = "HS256"
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"/auth/login",
+
+oauth2_bearer = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_GATEWAY_STAGE_PATH}/auth/login",
     auto_error=False,
 )
 

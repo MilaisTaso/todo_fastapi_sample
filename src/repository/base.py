@@ -2,7 +2,7 @@ import uuid
 from typing import Any, Dict, Generic, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy import BinaryExpression, select
+from sqlalchemy import BinaryExpression, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models.base import Base
@@ -24,6 +24,14 @@ class DatabaseRepository(Generic[Model]):
         await self.session.flush()
         await self.session.refresh(instance)
         return instance
+    
+    async def update(self, instance: Model, data: Dict[str, Any]) -> Model:
+        update_instance = instance.values(**data)
+
+        await self.session.add(update_instance)
+        await self.session.flush()
+        await self.session.refresh(update_instance)
+        return update_instance
 
     async def get_instance_by_id(self, id: uuid.UUID) -> Model | None:
         """get()は主キーに基づいたインスタンスを返す"""
