@@ -11,10 +11,11 @@ load_dotenv(".env", verbose=True)
 class Settings(BaseSettings):
     """App settings."""
 
+    RUN_ENV: str | None = os.getenv("RUN_ENV")
     PROJECT_NAME: str = "todo_fastapi"
     DEBUG: bool = os.getenv("DEBUG") or False
 
-    # データベース
+    # データベース接続情報
     DB_USER: str | None = os.getenv("DB_USER")
     DB_PASSWORD: str | None = os.getenv("DB_PASSWORD")
     DB_HOST: str = "db"
@@ -24,6 +25,11 @@ class Settings(BaseSettings):
     DATABASE_URL: str = (
         f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
+
+    # トークン関係
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    API_GATEWAY_STAGE_PATH: str = ""
+    SECRET_KEY: str | None = os.getenv("SECRET_KEY")
 
     model_config = SettingsConfigDict(
         case_sensitive=True,

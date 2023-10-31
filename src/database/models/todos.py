@@ -8,7 +8,7 @@ from src.database.models.base import Base
 
 
 class Todo(Base):
-    __tablename__ = "Todos"
+    __tablename__ = "todos"
 
     title: Mapped[str] = mapped_column(String(100), index=True)
     description: Mapped[str] = mapped_column(Text)

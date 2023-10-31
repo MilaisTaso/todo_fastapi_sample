@@ -19,7 +19,7 @@ class User(Base):
     email_verified: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,
-        server_default="0",
+        server_default="0",  # server_defaultはpythonではなくdbでデフォルト値を作成している
     )
     hashed_password: Mapped[str] = mapped_column(Text)
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="0")
@@ -28,7 +28,7 @@ class User(Base):
         return (
             f"*** Todo ***"
             f"id: {self.id!r},\n"
-            f"full_name: {self.fullname!r},\n"
+            f"full_name: {self.full_name!r},\n"
             f"first_name: {self.first_name!r},\n"
             f"last_name: {self.last_name!r},\n"
             f"email={self.email!r},\n"

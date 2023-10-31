@@ -25,7 +25,10 @@ lint: lint/.mypy lint/.flake8
 fmt: fmt/.black fmt/.isort
 
 migrate:
-	${RUN_CONTEXT} poetry run python src/database/migrate.py
+	${RUN_CONTEXT} poetry run python src/database/migrate.py migrate
+
+drop:
+	${RUN_CONTEXT} poetry run python src/database/migrate.py drop
 
 shell:
 	${RUN_CONTEXT} bash

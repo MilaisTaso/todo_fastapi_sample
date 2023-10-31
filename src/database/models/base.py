@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, String, func, orm
+from sqlalchemy import DateTime, func, orm
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql.functions import current_timestamp
 
@@ -22,6 +22,6 @@ class Base(orm.DeclarativeBase):
     updated_at: orm.Mapped[datetime] = orm.mapped_column(
         DateTime,
         nullable=False,
-        default=current_timestamp(),
+        server_default=current_timestamp(),
         onupdate=func.now(),
     )

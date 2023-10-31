@@ -2,21 +2,20 @@ from typing import Optional
 
 from pydantic import EmailStr, Field, field_serializer
 
-from src.core.utils import hashed_convert
+from src.core.lib.auth import hashed_convert
 from src.schemas.base import BaseRequestModel
 
 
 class UserRequest(BaseRequestModel):
-    def __init__(self, **data):
-        super.__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         if not self.full_name:
             self.full_name = f"{self.first_name} {self.last_name}"
 
     first_name: str = Field(min_length=1, max_length=20)
     last_name: str = Field(min_length=1, max_length=20)
-    full_name: Optional[str]
+    full_name: Optional[str] = None
     email: EmailStr
-    email_verified: bool
     hashed_password: str = Field(min_length=8, max_length=20)  # ハッシュにする前のパスワード
     is_admin: bool = Field(default=False)
 
