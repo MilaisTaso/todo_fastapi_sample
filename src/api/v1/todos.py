@@ -13,16 +13,18 @@ from src.schemas.response.todo import TodoResponse
 from src.repository.dependencies import get_repository
 from src.repository.crud.todo import TodoRepository
 from src.repository.crud.user import UserRepository
+from src.usecase.auth import AuthUseCase, get_auth_use_case
 
 router = APIRouter()
 
 todo_repository = Annotated[TodoRepository, Depends(get_repository(TodoRepository))]
 user_repository = Annotated[UserRepository, Depends(get_repository(UserRepository))]
-oauth_user = Annotated[User, Depends(user_repository.get_current_user)]
+
+auth_use_case = Annotated[AuthUseCase, Depends(get_auth_use_case(user_repository))]
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_todo(
-    user: oauth_user,
+    user: Depends(Security(auth_use_case.get_current_user, scopes=[])),
     todo_repo: todo_repository,
     body: TodoRequest = Body()
 ) -> TodoResponse:

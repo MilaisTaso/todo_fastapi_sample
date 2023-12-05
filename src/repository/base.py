@@ -1,14 +1,12 @@
 import uuid
 from typing import Any, Dict, Generic, TypeVar
 
-from pydantic import BaseModel
-from sqlalchemy import BinaryExpression, select, update
+from sqlalchemy import BinaryExpression, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models.base import Base
 
 Model = TypeVar("Model", bound=Base)
-RequestSchema = TypeVar("RequestSchema", bound=BaseModel)
 
 
 class DatabaseRepository(Generic[Model]):
