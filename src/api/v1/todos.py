@@ -3,31 +3,27 @@ from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, status, Security
 
+from src.core.lib.auth import get_current_user
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
 from src.schemas.requests.todo import TodoRequest
 from src.schemas.response.todo import TodoResponse
+from src.database.models.users import User
 from src.repository.dependencies import get_repository
 from src.repository.crud.todo import TodoRepository
-from src.repository.crud.user import UserRepository
-from src.usecase.auth import AuthUseCase
-from src.usecase.dependencies import get_use_case
 
 router = APIRouter()
 
 todo_repository = Annotated[TodoRepository, Depends(get_repository(TodoRepository))]
-auth_use_case = Annotated[AuthUseCase, Depends(get_use_case(AuthUseCase, UserRepository))]
 
-@router.post(
-    "/",
-    status_code=status.HTTP_201_CREATED,
-    dependencies=[Security(auth_use_case.get_current_user, scopes=[])]
-    )
+@router.post("/", status_code=status.HTTP_201_CREATED,)
 async def create_todo(
     todo_repo: todo_repository,
+    user: Annotated[User, Security(get_current_user)],
     body: TodoRequest = Body()
 ) -> TodoResponse:
-    todo = todo_repo.create(body.model_dump())
+    body.user_id = user.id
+    todo = await todo_repo.create(body.model_dump())
 
     return TodoResponse.model_validate(todo)
 

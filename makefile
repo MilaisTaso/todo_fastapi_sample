@@ -3,17 +3,22 @@ TARGET ?= src
 DB_USER ?= postgres
 DB_NAME ?= sample
 
-up: docker compose up -d
+up: 
+	docker compose up -d
 
-build: docker compose up -d --build
+build: 
+	docker compose up -d --build
 
-down: docker compose down
+down:
+	docker compose down
 
-log: docker compose logs -f app
+log: 
+	docker compose logs -f app
 
 restart: down up
 
-db: docker compose exec db psql -U ${DB_USER} -d ${DB_NAME}
+db: 
+	docker compose exec db psql -U ${DB_USER} -d ${DB_NAME}
 
 lint: lint/.mypy lint/.flake8
 
