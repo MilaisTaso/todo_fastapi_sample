@@ -9,22 +9,23 @@ from src.core.config import settings
 from src.core.lib.auth import create_access_token
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
-from src.repository.dependencies import get_repository
 from src.repository.crud.user import UserRepository
 from src.schemas.response.token import Token
+from src.usecase.auth import AuthUseCase
+from src.usecase.dependencies import get_use_case
 
 router = APIRouter()
 
-user_repository = Annotated[UserRepository, Depends(get_repository(UserRepository))]
+auth_use_case = Annotated[AuthUseCase, Depends(get_use_case(AuthUseCase, UserRepository))]
 
 
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=Token)
 async def login_access_token(
-    user_repo: user_repository,
+    auth_use_case: auth_use_case,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
     # RequestFormのusernameフィールドをemailように使う
-    user = await user_repo.authenticate(
+    user = await auth_use_case.authenticate(
         email=form_data.username, password=form_data.password
     )
     if not user:

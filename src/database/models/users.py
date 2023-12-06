@@ -19,7 +19,7 @@ class User(Base):
     email_verified: Mapped[bool] = mapped_column(
         Boolean,
         nullable=False,
-        server_default="0",  # server_defaultはpythonではなくdbでデフォルト値を作成している
+        server_default="0",  # データベース側でデフォルト値を生成
     )
     hashed_password: Mapped[str] = mapped_column(Text)
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="0")

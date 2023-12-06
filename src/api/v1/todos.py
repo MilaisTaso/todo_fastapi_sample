@@ -2,10 +2,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, status, Security
-from sqlalchemy import delete, select, update
 
-from src.database.models.todos import Todo
-from src.database.models.users import User
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
 from src.schemas.requests.todo import TodoRequest
@@ -13,14 +10,13 @@ from src.schemas.response.todo import TodoResponse
 from src.repository.dependencies import get_repository
 from src.repository.crud.todo import TodoRepository
 from src.repository.crud.user import UserRepository
-from src.usecase.auth import AuthUseCase, get_auth_use_case
+from src.usecase.auth import AuthUseCase
+from src.usecase.dependencies import get_use_case
 
 router = APIRouter()
 
 todo_repository = Annotated[TodoRepository, Depends(get_repository(TodoRepository))]
-user_repository = Annotated[UserRepository, Depends(get_repository(UserRepository))]
-
-auth_use_case = Annotated[AuthUseCase, Depends(get_auth_use_case(user_repository))]
+auth_use_case = Annotated[AuthUseCase, Depends(get_use_case(AuthUseCase, UserRepository))]
 
 @router.post(
     "/",
@@ -62,7 +58,5 @@ async def delete_todo(id: UUID, todo_repo: todo_repository):
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
     
-    stmt = delete(Todo).where(Todo.id == id)
-    await db.execute(stmt)
-    await db.flush()
+    todo_repo.delete(id)
     return None

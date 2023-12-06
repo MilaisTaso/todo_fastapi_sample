@@ -1,8 +1,8 @@
 from typing import TypeVar, Generic
 
-from src.repository.base import DatabaseRepository
+from src.repository.base import Repository
 
-Repository = TypeVar("Repository", bound=DatabaseRepository)
+UseCase = TypeVar("UseCase", bound="BaseUseCase")
 
 class BaseUseCase(Generic[Repository]):
     pass

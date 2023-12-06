@@ -1,10 +1,12 @@
 import uuid
+from typing import TypeVar
 from datetime import datetime
 
 from sqlalchemy import DateTime, func, orm
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql.functions import current_timestamp
 
+Model = TypeVar("Model", bound="Base")
 
 class Base(orm.DeclarativeBase):
     """Base database model."""

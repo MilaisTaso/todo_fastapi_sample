@@ -52,6 +52,3 @@ class AuthUseCase(BaseUseCase):
                 error=ErrorMessage.PERMISSION_ERROR,
             )
         return user
-    
-def get_auth_use_case(user_repository: UserRepository) -> AuthUseCase:
-    return AuthUseCase(user_repository)

@@ -1,13 +1,13 @@
 import abc
-import uuid
+from uuid import UUID
 from typing import Any, Dict, Generic, TypeVar
 
-from sqlalchemy import BinaryExpression, select, delete
+from sqlalchemy import BinaryExpression, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models.base import Base
+from src.database.models.base import Model
 
-Model = TypeVar("Model", bound=Base)
+Repository = TypeVar("Repository", bound="DatabaseRepository")
 
 class DatabaseRepository(Generic[Model]):
     """Repository for performing database queries."""
@@ -31,7 +31,7 @@ class DatabaseRepository(Generic[Model]):
         await self.session.refresh(update_instance)
         return update_instance
 
-    async def get_instance_by_id(self, id: uuid.UUID) -> Model | None:
+    async def get_instance_by_id(self, id: UUID) -> Model | None:
         """get()は主キーに基づいたインスタンスを返す"""
         return await self.session.get(self.model, id)
 
@@ -52,5 +52,5 @@ class DatabaseRepository(Generic[Model]):
     
     #クラス内で抽象メソッドを定義できる
     @abc.abstractmethod
-    async def delete(self, id: uuid.UUID):
+    async def delete(self, id: UUID):
         pass
