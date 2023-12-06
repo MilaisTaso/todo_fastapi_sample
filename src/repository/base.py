@@ -1,13 +1,13 @@
+import abc
 import uuid
 from typing import Any, Dict, Generic, TypeVar
 
-from sqlalchemy import BinaryExpression, select
+from sqlalchemy import BinaryExpression, select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models.base import Base
 
 Model = TypeVar("Model", bound=Base)
-
 
 class DatabaseRepository(Generic[Model]):
     """Repository for performing database queries."""
@@ -38,7 +38,7 @@ class DatabaseRepository(Generic[Model]):
     async def get_instance(self, *expressions: BinaryExpression) -> Model | None:
         if not expressions:
             return
-        stmt = select(self.model).where(*expressions)
+        stmt = (select(self.model).where(*expressions))
         return await self.session.scalar(stmt)
 
     async def get_instance_list(
@@ -49,3 +49,8 @@ class DatabaseRepository(Generic[Model]):
         if expressions:
             query = query.where(*expressions)
         return list(await self.session.scalars(query))
+    
+    #クラス内で抽象メソッドを定義できる
+    @abc.abstractmethod
+    async def delete(self, id: uuid.UUID):
+        pass

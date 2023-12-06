@@ -22,21 +22,23 @@ user_repository = Annotated[UserRepository, Depends(get_repository(UserRepositor
 
 auth_use_case = Annotated[AuthUseCase, Depends(get_auth_use_case(user_repository))]
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Security(auth_use_case.get_current_user, scopes=[])]
+    )
 async def create_todo(
-    user: Depends(Security(auth_use_case.get_current_user, scopes=[])),
     todo_repo: todo_repository,
     body: TodoRequest = Body()
 ) -> TodoResponse:
-    body.user_id = user.id
     todo = todo_repo.create(body.model_dump())
 
     return TodoResponse.model_validate(todo)
 
-@router.get("/")
+@router.get("/", status_code=status.HTTP_200_OK)
 async def get_todos(todo_repo: todo_repository):
-    result = await db.execute(select(Todo))
-    return [TodoResponse(todo) for todo in result.all()]
+    todos = await todo_repo.get_instance_list()
+    return todos
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
@@ -56,6 +58,10 @@ async def update_todo(id: UUID, todo_repo: todo_repository, body: TodoRequest = 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_todo(id: UUID, todo_repo: todo_repository):
+    todo = await todo_repo.get_instance_by_id(id)
+    if not todo:
+        raise APIException(ErrorMessage.ID_NOT_FOUND)
+    
     stmt = delete(Todo).where(Todo.id == id)
     await db.execute(stmt)
     await db.flush()

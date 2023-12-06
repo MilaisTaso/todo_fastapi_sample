@@ -12,11 +12,11 @@ class Todo(Base):
 
     title: Mapped[str] = mapped_column(String(100), index=True)
     description: Mapped[str] = mapped_column(Text)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     completed_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime,
         nullable=True,
     )
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
 
     def __repr__(self) -> str:
         return (
@@ -24,6 +24,7 @@ class Todo(Base):
             f"id: {self.id!r},\n"
             f"title: {self.title!r},\n"
             f"description: {self.description!r},\n"
+            f"user_id: {self.user_id}, \n"
             f"completed_at: {self.completed_at!r},\n"
             f"created_at: {self.created_at!r},\n"
             f"updated_at: {self.updated_at!r})"
