@@ -6,7 +6,7 @@ from src.database.models.todos import Todo
 from src.repository.base import DatabaseRepository
 
 
-class TodoRepository(DatabaseRepository):
+class TodoRepository(DatabaseRepository[Todo]):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(Todo, session)
     

@@ -24,11 +24,14 @@ lint: lint/.mypy lint/.flake8
 
 fmt: fmt/.black fmt/.isort
 
-migrate: ${RUN_CONTEXT} poetry run python src/database/migrate.py migrate
+migrate: 
+	${RUN_CONTEXT} poetry run python src/database/migrate.py migrate
 
-drop: ${RUN_CONTEXT} poetry run python src/database/migrate.py drop
+drop:
+	${RUN_CONTEXT} poetry run python src/database/migrate.py drop
 
-shell: ${RUN_CONTEXT} bash
+shell:
+	${RUN_CONTEXT} bash
 
 # 詳細-------------------------------------
 lint/.mypy: $(RUN_CONTEXT) poetry run mypy ${TARGET}

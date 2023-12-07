@@ -13,14 +13,14 @@ class Settings(BaseSettings):
 
     RUN_ENV: str | None = os.getenv("RUN_ENV")
     PROJECT_NAME: str = "todo_fastapi"
-    DEBUG: bool = os.getenv("DEBUG") or False
+    DEBUG: bool = True
 
     # データベース接続情報
     DB_USER: str | None = os.getenv("DB_USER")
     DB_PASSWORD: str | None = os.getenv("DB_PASSWORD")
     DB_HOST: str = "db"
     DB_PORT: str = "5432"
-    DB_NAME: str = os.getenv("DB_NAME")
+    DB_NAME: str | None = os.getenv("DB_NAME")
 
     DATABASE_URL: str = (
         f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"

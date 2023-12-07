@@ -6,9 +6,9 @@ from src.database.models.users import User
 from src.repository.base import DatabaseRepository
 
 
-class UserRepository(DatabaseRepository):
+class UserRepository(DatabaseRepository[User]):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(User, session)
 
-    def delete(self, id: UUID):
-        pass
+    def delete(self, id: UUID) -> None:
+        ...

@@ -5,9 +5,10 @@ from typing import Any, Dict, Generic, TypeVar
 from sqlalchemy import BinaryExpression, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models.base import Model
+from src.database.models.base import Base
 
-Repository = TypeVar("Repository", bound="DatabaseRepository")
+Model = TypeVar("Model", bound=Base)
+
 
 class DatabaseRepository(Generic[Model]):
     """Repository for performing database queries."""
@@ -37,7 +38,7 @@ class DatabaseRepository(Generic[Model]):
 
     async def get_instance(self, *expressions: BinaryExpression) -> Model | None:
         if not expressions:
-            return
+            return None
         stmt = (select(self.model).where(*expressions))
         return await self.session.scalar(stmt)
 
@@ -52,5 +53,5 @@ class DatabaseRepository(Generic[Model]):
     
     #クラス内で抽象メソッドを定義できる
     @abc.abstractmethod
-    async def delete(self, id: UUID):
+    async def delete(self, id: UUID) -> None:
         pass
