@@ -10,5 +10,5 @@ class UserRepository(DatabaseRepository[User]):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(User, session)
 
-    def delete(self, id: UUID) -> None:
-        ...
+    async def delete(self, id: UUID) -> str:
+        return "Delete Successful"

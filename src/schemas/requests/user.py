@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import ConfigDict, EmailStr, Field, field_serializer
 
@@ -7,7 +7,7 @@ from src.schemas.base import BaseRequestModel
 
 
 class UserRequest(BaseRequestModel):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         if not self.full_name:
             self.full_name = f"{self.first_name} {self.last_name}"
@@ -18,9 +18,9 @@ class UserRequest(BaseRequestModel):
     email: EmailStr
     hashed_password: str = Field(min_length=8, max_length=20)  # ハッシュにする前のパスワード
     is_admin: bool = Field(default=False)
-    
+
     model_config = ConfigDict(
-        frozen=False, # __init__で値を生成するため
+        frozen=False,  # __init__で値を生成するため
     )
 
     # dictへ変換する際にパスワードをハッシュ化する

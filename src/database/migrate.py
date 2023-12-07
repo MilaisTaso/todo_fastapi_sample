@@ -2,15 +2,13 @@ import argparse
 import asyncio
 import logging
 
-from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.sql import text
 
 from src.core.config import settings
 from src.database.models.base import Base
-from src.database.models.todos import Todo
 
 # 作成したいテーブル定義もインポートする必要あり 呼び出すテーブルの順番は重要
+from src.database.models.todos import Todo
 from src.database.models.users import User
 
 logging.basicConfig()

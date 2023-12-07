@@ -1,6 +1,6 @@
 import abc
-from uuid import UUID
 from typing import Any, Dict, Generic, TypeVar
+from uuid import UUID
 
 from sqlalchemy import BinaryExpression, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,7 +23,7 @@ class DatabaseRepository(Generic[Model]):
         await self.session.flush()
         await self.session.refresh(instance)
         return instance
-    
+
     async def update(self, instance: Model, data: Dict[str, Any]) -> Model:
         update_instance = instance.values(**data)
 
@@ -39,7 +39,7 @@ class DatabaseRepository(Generic[Model]):
     async def get_instance(self, *expressions: BinaryExpression) -> Model | None:
         if not expressions:
             return None
-        stmt = (select(self.model).where(*expressions))
+        stmt = select(self.model).where(*expressions)
         return await self.session.scalar(stmt)
 
     async def get_instance_list(
@@ -50,8 +50,8 @@ class DatabaseRepository(Generic[Model]):
         if expressions:
             query = query.where(*expressions)
         return list(await self.session.scalars(query))
-    
-    #クラス内で抽象メソッドを定義できる
+
+    # クラス内で抽象メソッドを定義できる
     @abc.abstractmethod
-    async def delete(self, id: UUID) -> None:
+    async def delete(self, id: UUID) -> str:
         pass

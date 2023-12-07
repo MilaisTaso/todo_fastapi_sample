@@ -12,7 +12,7 @@ def to_camel(string: str) -> str:
 
 class BaseRequestModel(BaseModel):
     model_config = ConfigDict(
-        extra="ignore", # 定義していないフィールドの無視
+        extra="ignore",  # 定義していないフィールドの無視
         frozen=True,  # フィールド値の変更を許可しない
         alias_generator=to_camel,  # 各フィールドにキャラメルケースのエイリアスを作成
         allow_population_by_field_name=True,  # キャラメルケースで送られてきたリクエストも許可する

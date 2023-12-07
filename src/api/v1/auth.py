@@ -1,6 +1,4 @@
-import datetime
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -14,14 +12,11 @@ router = APIRouter()
 
 user_repository = Annotated[UserRepository, Depends(get_repository(UserRepository))]
 
+
 @router.post("/login", status_code=status.HTTP_200_OK, response_model=Token)
 async def login_access_token(
     user_repo: user_repository,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-) -> Token:
+) -> Token | None:
     # RequestFormのusernameフィールドをemailように使う
-    return await authenticate(
-        user_repo,
-        form_data.username,
-        form_data.password
-    )
+    return await authenticate(user_repo, form_data.username, form_data.password)

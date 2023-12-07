@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -14,7 +16,7 @@ class Token(BaseModel):
 
 
 class TokenPayload(BaseModel):
-    sub: str | None = None
+    sub: UUID
 
     model_config = ConfigDict(
         extra="forbid",

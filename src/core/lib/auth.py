@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Annotated
+from typing import Annotated, Any, Dict
 
 from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
@@ -10,10 +10,10 @@ from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import settings
+from src.database.models.users import User
 from src.database.setting import get_db_session
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
-from src.database.models.users import User
 from src.repository.crud.user import UserRepository
 from src.repository.dependencies import get_repository
 from src.schemas.response.token import Token, TokenPayload
@@ -29,6 +29,7 @@ oauth2_bearer = OAuth2PasswordBearer(
 
 """パスワード関係"""
 
+
 # 渡されたパスワードが同一のものかチェックする
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt_context.verify(plain_password, hashed_password)
@@ -40,6 +41,7 @@ def hashed_convert(string: str) -> str:
 
 
 """認証関係"""
+
 
 def create_access_token(
     subject: str | Any,
@@ -59,14 +61,12 @@ def create_access_token(
 
 
 async def authenticate(
-    user_repo: UserRepository,
-    email: str,
-    password: str
-) -> User | None:
+    user_repo: UserRepository, email: str, password: str
+) -> Token | None:
     user = await user_repo.get_instance(User.email == email)
     if not user:
         raise APIException(ErrorMessage.FAILURE_LOGIN)
-    
+
     if not verify_password(password, user.hashed_password):
         return None
 
@@ -83,7 +83,7 @@ async def authenticate(
 async def get_current_user(
     security_scopes: SecurityScopes,
     user_repo: Annotated[UserRepository, Depends(get_repository(UserRepository))],
-    token: Annotated[str,Depends(oauth2_bearer)]
+    token: Annotated[str, Depends(oauth2_bearer)],
 ) -> User:
     """
     クラスメソッドとして実装するとSecurityに依存関係を注入できないため、
@@ -95,16 +95,16 @@ async def get_current_user(
 
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-        token_data = TokenPayload(sub=payload.get("sub"))
+        token_data: TokenPayload = TokenPayload(sub=payload.get("sub"))
 
-    #JWTErrorやValidationErrorは表示しないようfrom Noneとしている
+    # JWTErrorやValidationErrorは表示しないようfrom Noneとしている
     except (JWTError, ValidationError):
         raise APIException(ErrorMessage.CouldNotValidateCredentials) from None
 
-    user: User = await user_repo.get_instance_by_id(token_data.sub)
+    user: User | None = await user_repo.get_instance_by_id(token_data.sub)
     if not user:
         raise APIException(ErrorMessage.NOT_FOUND("User"))
-    
+
     if "admin" in security_scopes.scopes and not user.is_admin:
         raise APIException(
             status_code=status.HTTP_401_UNAUTHORIZED,
