@@ -13,7 +13,7 @@ ENV PYTHONPATH=/app
 
 RUN pip install --no-cache-dir poetry==${POETRY_VERSION}
 
-# poetryの定義ファイルをコピー
+# poetryの定義とログ設定ファイルをコピー
 COPY pyproject.toml poetry.lock ./
 
 # poetry初期設定
@@ -34,4 +34,4 @@ RUN apt update -yqq && \
     rm -rf /var/lib/apt/lists/*
 
 # uvicornのサーバーを立ち上げる
-ENTRYPOINT ["poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--reload", "--log-config", "./logger_config.yaml", "--reload-exclude", "'.#*'"]
+ENTRYPOINT ["poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--reload", "--log-config", "./src/logger/logger_config.yaml", "--reload-exclude", "'.#*'"]

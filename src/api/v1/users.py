@@ -5,6 +5,8 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status
 
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
+from src.database.models.users import User
+from src.core.lib.auth import get_current_user
 from src.repository.crud.user import UserRepository
 from src.repository.dependencies import get_repository
 from src.schemas.requests.user import UserRequest
@@ -17,7 +19,20 @@ user_repository = Annotated[UserRepository, Depends(get_repository(UserRepositor
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(
-    user_repo: user_repository, request: UserRequest = Body()
+    user_repo: user_repository, body: UserRequest = Body()
 ) -> UserResponse:
-    user = await user_repo.create(request.model_dump())
+    exists_user: User | None  = user_repo.get_instance(User.email == body.email)
+    
+    if exists_user:
+        raise APIException(ErrorMessage.ALREADY_REGISTED_EMAIL)
+    
+    user: User = await user_repo.create(body.model_dump())
     return UserResponse.model_validate(user)
+
+@router.patch("{id}", status_code=status.HTTP_200_OK)
+async def update_user(
+    user: Annotated[User, Depends(get_current_user)],
+    user_repo: UserRepository,
+    body: UserRequest = Body()
+) -> UserResponse:
+    ...

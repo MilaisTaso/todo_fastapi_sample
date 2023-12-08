@@ -31,10 +31,10 @@ loggers:
     handlers: [console]
     propagate: false
 
-  # sqlalchemy.engine:
-  #   level: DEBUG
-  #   handlers: [console]
-  #   propagate: false
+  sqlalchemy.engine:
+    level: DEBUG
+    handlers: [console]
+    propagate: false
 
   alembic.runtime.migration:
     level: INFO

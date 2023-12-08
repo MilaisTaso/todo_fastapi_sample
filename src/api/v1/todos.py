@@ -48,8 +48,14 @@ async def get_todo(id: UUID, todo_repo: todo_repository) -> TodoResponse:
 
 @router.patch("/{id}", status_code=status.HTTP_200_OK)
 async def update_todo(
-    id: UUID, todo_repo: todo_repository, body: TodoRequest = Body()
+    id: UUID,
+    todo_repo: todo_repository,
+    user: Annotated[User, Depends(get_current_user)],
+    body: TodoRequest = Body()
 ) -> TodoResponse:
+    if not user.id == id:
+        raise APIException(ErrorMessage.PERMISSION_ERROR("編集"))
+    
     todo = await todo_repo.get_instance_by_id(id)
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
@@ -58,7 +64,7 @@ async def update_todo(
     return TodoResponse.model_validate(update_todo)
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_200_OK)
 async def delete_todo(id: UUID, todo_repo: todo_repository) -> str:
     todo = await todo_repo.get_instance_by_id(id)
     if not todo:

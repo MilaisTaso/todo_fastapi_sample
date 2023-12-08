@@ -1,5 +1,6 @@
+from uuid import UUID
 from datetime import datetime, timedelta, timezone
-from typing import Annotated, Any, Dict
+from typing import Annotated, Any
 
 from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes

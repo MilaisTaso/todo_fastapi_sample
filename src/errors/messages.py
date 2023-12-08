@@ -17,14 +17,14 @@ class BaseMessage:
 
 
 class ErrorMessage:
-    """エラーメッセージクラス.
+    """エラーメッセージクラス
 
-    Notes
     -----
         BaseMessagを継承することで
         Class呼び出し時にClass名がエラーコードになり、.textでエラーメッセージも取得できるため
         エラーコードと、メッセージの管理が直感的に行える。
-
+    ----
+    
     """
 
     # 共通
@@ -66,7 +66,7 @@ class ErrorMessage:
         text = "メールアドレスまたはパスワードが正しくありません"
 
     class PERMISSION_ERROR(BaseMessage):
-        text = "実行権限がありません"
+        text = "{}権限がありません"
 
     class CouldNotValidateCredentials(BaseMessage):
         status_code = status.HTTP_403_FORBIDDEN
