@@ -50,25 +50,32 @@ async def get_todo(id: UUID, todo_repo: todo_repository) -> TodoResponse:
 async def update_todo(
     id: UUID,
     todo_repo: todo_repository,
-    user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     body: TodoRequest = Body()
 ) -> TodoResponse:
-    if not user.id == id:
-        raise APIException(ErrorMessage.PERMISSION_ERROR("編集"))
-    
     todo = await todo_repo.get_instance_by_id(id)
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
+    
+    if todo.id != current_user.id or not current_user.is_admin:
+        raise APIException(ErrorMessage.PERMISSION_ERROR("編集"))
 
-    update_todo = todo_repo.update(todo, body.model_dump())
+    update_todo = await todo_repo.update(todo, body.model_dump())
     return TodoResponse.model_validate(update_todo)
 
 
 @router.delete("/{id}", status_code=status.HTTP_200_OK)
-async def delete_todo(id: UUID, todo_repo: todo_repository) -> str:
+async def delete_todo(
+    id: UUID,
+    todo_repo: todo_repository,
+    current_user: Annotated[User, Depends(get_current_user)]
+) -> str:
     todo = await todo_repo.get_instance_by_id(id)
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
+    
+    if todo.user_id != current_user.id or not current_user.is_admin:
+        raise APIException(ErrorMessage.PERMISSION_ERROR("消去"))
 
     result = todo_repo.delete(id)
     return MessageResponse(message=result)

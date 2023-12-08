@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, status
 
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
@@ -31,8 +31,17 @@ async def create_user(
 
 @router.patch("{id}", status_code=status.HTTP_200_OK)
 async def update_user(
-    user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     user_repo: UserRepository,
     body: UserRequest = Body()
 ) -> UserResponse:
-    ...
+    
+    exists_user: User | None  = await user_repo.get_instance_by_id(id)
+    if not exists_user:
+        raise APIException(ErrorMessage.ID_NOT_FOUND)
+    
+    if exists_user.id != current_user.id or not current_user.is_admin:
+        raise APIException(ErrorMessage.PERMISSION_ERROR("消去"))
+    
+    user: User = await user_repo.update(exists_user, body.model_dump())
+    return UserResponse.model_validate(user)
