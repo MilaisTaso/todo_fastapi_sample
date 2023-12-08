@@ -12,6 +12,9 @@ build:
 down:
 	docker compose down
 
+delete:
+	docker-compose down --rmi all --volumes --remove-orphans
+
 log:
 	docker compose logs -f app
 

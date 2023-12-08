@@ -40,7 +40,7 @@ class DatabaseRepository(Generic[Model]):
         if not expressions:
             return None
         stmt = select(self.model).where(*expressions)
-        return await self.session.scalar(stmt)
+        return (await self.session.scalar(stmt))
 
     async def get_instance_list(
         self,

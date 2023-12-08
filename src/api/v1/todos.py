@@ -50,14 +50,16 @@ async def get_todo(id: UUID, todo_repo: todo_repository) -> TodoResponse:
 async def update_todo(
     id: UUID,
     todo_repo: todo_repository,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Security(get_current_user)],
     body: TodoRequest = Body()
 ) -> TodoResponse:
     todo = await todo_repo.get_instance_by_id(id)
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
     
-    if todo.id != current_user.id or not current_user.is_admin:
+    print(todo.user_id, current_user.id)
+    
+    if todo.user_id != current_user.id:
         raise APIException(ErrorMessage.PERMISSION_ERROR("編集"))
 
     update_todo = await todo_repo.update(todo, body.model_dump())
@@ -68,13 +70,13 @@ async def update_todo(
 async def delete_todo(
     id: UUID,
     todo_repo: todo_repository,
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[User, Security(get_current_user)]
 ) -> str:
     todo = await todo_repo.get_instance_by_id(id)
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
     
-    if todo.user_id != current_user.id or not current_user.is_admin:
+    if todo.user_id != current_user.id:
         raise APIException(ErrorMessage.PERMISSION_ERROR("消去"))
 
     result = todo_repo.delete(id)
