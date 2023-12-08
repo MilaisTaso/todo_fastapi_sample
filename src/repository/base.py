@@ -25,12 +25,14 @@ class DatabaseRepository(Generic[Model]):
         return instance
 
     async def update(self, instance: Model, data: Dict[str, Any]) -> Model:
-        update_instance = instance.values(**data)
+        for key, value in data.items():
+            if hasattr(instance, key):
+                setattr(instance, key, value)
 
-        await self.session.add(update_instance)
+        await self.session.add(instance)
         await self.session.flush()
-        await self.session.refresh(update_instance)
-        return update_instance
+        await self.session.refresh(instance)
+        return instance
 
     async def get_instance_by_id(self, id: UUID) -> Model | None:
         """get()は主キーに基づいたインスタンスを返す"""

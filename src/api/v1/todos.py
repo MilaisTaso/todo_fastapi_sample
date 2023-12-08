@@ -57,8 +57,6 @@ async def update_todo(
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
     
-    print(todo.user_id, current_user.id)
-    
     if todo.user_id != current_user.id:
         raise APIException(ErrorMessage.PERMISSION_ERROR("編集"))
 
