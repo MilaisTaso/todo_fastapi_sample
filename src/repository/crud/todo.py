@@ -14,5 +14,6 @@ class TodoRepository(DatabaseRepository[Todo]):
     async def delete(self, id: UUID) -> str:
         """直接self.model.idとはできない"""
         stmt = delete(Todo).where(Todo.id == id)
-        await self.session.execute(stmt)
-        return "Delete Successful"
+        result = await self.session.execute(stmt)
+        
+        return "Successful delete {} record".format(result.rowcount)

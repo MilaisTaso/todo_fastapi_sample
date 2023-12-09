@@ -45,16 +45,7 @@ class ErrorMessage:
     class PARAM_IS_NOT_SET(BaseMessage):
         text = "{}がセットされていません"
 
-    class ALREADY_DELETED(BaseMessage):
-        text = "既に削除済です"
-
-    class SOFT_DELETE_NOT_SUPPORTED(BaseMessage):
-        text = "論理削除には未対応です"
-
-    class COLUMN_NOT_ALLOWED(BaseMessage):
-        text = "このカラムは指定できません"
-
-    # ユーザー
+    # ユーザー関係
     class ALREADY_REGISTED_EMAIL(BaseMessage):
         text = "登録済のメールアドレスです"
 
@@ -70,4 +61,4 @@ class ErrorMessage:
 
     class CouldNotValidateCredentials(BaseMessage):
         status_code = status.HTTP_403_FORBIDDEN
-        text = "認証エラー"
+        text = "ユーザー認証に失敗しました"

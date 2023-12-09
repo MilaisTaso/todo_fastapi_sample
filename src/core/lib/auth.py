@@ -100,7 +100,7 @@ async def get_current_user(
 
     # JWTErrorやValidationErrorは表示しないようfrom Noneとしている
     except (JWTError, ValidationError):
-        raise APIException(ErrorMessage.CouldNotValidateCredentials) from None
+        raise APIException(ErrorMessage.CouldNotValidateCredentials)
 
     user: User | None = await user_repo.get_instance_by_id(token_data.sub)
     if not user:

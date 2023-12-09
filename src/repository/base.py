@@ -26,10 +26,10 @@ class DatabaseRepository(Generic[Model]):
 
     async def update(self, instance: Model, data: Dict[str, Any]) -> Model:
         for key, value in data.items():
-            if hasattr(instance, key):
+            if hasattr(instance, key) and value:
                 setattr(instance, key, value)
 
-        await self.session.add(instance)
+        self.session.add(instance)
         await self.session.flush()
         await self.session.refresh(instance)
         return instance
