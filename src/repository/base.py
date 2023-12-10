@@ -2,7 +2,7 @@ import abc
 from typing import Any, Dict, Generic, TypeVar
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, select
+from sqlalchemy import BinaryExpression, select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models.base import Base
@@ -52,8 +52,3 @@ class DatabaseRepository(Generic[Model]):
         if expressions:
             query = query.where(*expressions)
         return list(await self.session.scalars(query))
-
-    # クラス内で抽象メソッドを定義できる
-    @abc.abstractmethod
-    async def delete(self, id: UUID) -> str:
-        pass

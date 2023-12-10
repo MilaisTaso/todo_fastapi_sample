@@ -15,5 +15,5 @@ class TodoRepository(DatabaseRepository[Todo]):
         """直接self.model.idとはできない"""
         stmt = delete(Todo).where(Todo.id == id)
         result = await self.session.execute(stmt)
-        
+        await self.session.flush()
         return "Successful delete {} record".format(result.rowcount)

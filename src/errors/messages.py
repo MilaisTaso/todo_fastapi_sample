@@ -36,14 +36,11 @@ class ErrorMessage:
         text = "ログインが失敗しました"
 
     class NOT_FOUND(BaseMessage):
-        text = "{}が見つかりません"
+        text = "指定の{}が存在しません"
 
     class ID_NOT_FOUND(BaseMessage):
         status_code = status.HTTP_404_NOT_FOUND
-        text = "このidは見つかりません"
-
-    class PARAM_IS_NOT_SET(BaseMessage):
-        text = "{}がセットされていません"
+        text = "指定のIDは存在しません"
 
     # ユーザー関係
     class ALREADY_REGISTED_EMAIL(BaseMessage):
@@ -62,3 +59,7 @@ class ErrorMessage:
     class CouldNotValidateCredentials(BaseMessage):
         status_code = status.HTTP_403_FORBIDDEN
         text = "ユーザー認証に失敗しました"
+        
+    class AlreadyUserDeleted(BaseMessage):
+        status_code = status.HTTP_404_NOT_FOUND
+        text = "すでに退会済みのユーザーです"
