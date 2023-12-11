@@ -27,8 +27,9 @@ lint:	lint-mypy lint-flake8
 
 fmt:	fmt/.black fmt/.isort
 
-migrate:
-	${RUN_CONTEXT} poetry run python src/database/migrate.py migrate
+migrate: 
+	${RUN_CONTEXT} poetry run alembic upgrade head
+# alembic不使用時: ${RUN_CONTEXT} poetry run python src/database/migrate.py migrate
 
 drop:	
 	${RUN_CONTEXT} poetry run python src/database/migrate.py drop

@@ -7,9 +7,6 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from src.core.config import settings
 from src.database.models.base import Base
 
-# 作成したいテーブル定義もインポートする必要あり 呼び出すテーブルの順番は重要
-from src.database.models.todos import Todo
-from src.database.models.users import User
 
 logging.basicConfig()
 logger = logging.getLogger()
