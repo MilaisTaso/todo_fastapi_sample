@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import DateTime, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.models.base import Base
 
@@ -16,7 +16,6 @@ class Todo(Base):
         DateTime,
         nullable=True,
     )
-    user = relationship("User", back_populates="todos")
 
     def __repr__(self) -> str:
         return (

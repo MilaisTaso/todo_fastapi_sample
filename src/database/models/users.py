@@ -1,9 +1,8 @@
 from datetime import datetime
 from sqlalchemy import Boolean, String, Text, DateTime
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.models.base import Base
-# from src.database.models.todos import Todo
 
 
 class User(Base):
@@ -26,8 +25,6 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(Text)
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="0")
     deleted_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    #Mappedを使うと循環インポートになってしまう
-    todos = relationship("Todo", back_populates="user")
 
     def __repr__(self) -> str:
         return (

@@ -7,7 +7,7 @@ from sqlalchemy.sql.functions import current_timestamp
 
 
 class Base(orm.DeclarativeBase):
-    """Base database model."""
+    """これを継承してモデルを作成すること"""
 
     id: orm.Mapped[uuid.UUID] = orm.mapped_column(
         UUID,
