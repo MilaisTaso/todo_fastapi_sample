@@ -25,6 +25,25 @@ class Settings(BaseSettings):
     DATABASE_URL: str = (
         f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
+    
+    # CORS 適時追加すること
+    ORIGIN_RESOURCES: list[str] = [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
+    
+    # 許可するヘッダー情報
+    ALLOW_HEADERS: list[str] = [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "Cache-Control",
+        "Expires",
+        "Pragma",
+    ]
 
     # トークン関係
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
