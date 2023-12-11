@@ -32,18 +32,6 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
     ]
     
-    # 許可するヘッダー情報
-    ALLOW_HEADERS: list[str] = [
-        "Content-Type",
-        "Authorization",
-        "X-Requested-With",
-        "Accept",
-        "Origin",
-        "User-Agent",
-        "Cache-Control",
-        "Expires",
-        "Pragma",
-    ]
 
     # トークン関係
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60

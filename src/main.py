@@ -37,7 +37,7 @@ app.add_middleware(
     #正規表現使用例
     #allow_origin_regex=r"^https?:\/\/([\w\-\_]{1,}\.|)example\.com",
     allow_methods=["*"],
-    allow_headers=settings.ALLOW_HEADERS,
+    allow_headers=["*"],
 )
 
 # 各エンドポイントの追加は各ディレクトリの__init__.pyへ
