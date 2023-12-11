@@ -21,11 +21,10 @@ class TodoCreateRequest(TodoRequest):
 class TodoUpdateRequest(TodoRequest):
     completed_at: bool = Field(default=False)
 
-    #データベースのカラムはDatetime型なのでmodel_validate()で必ず変換すること
+    # データベースのカラムはDatetime型なのでmodel_validate()で必ず変換すること
     @field_serializer("completed_at")
     def insert_complete_datetime(self, is_completed) -> datetime | None:
         if is_completed:
             return datetime.now()
-        
+
         return None
-    

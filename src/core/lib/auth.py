@@ -1,6 +1,6 @@
-from uuid import UUID
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
+from uuid import UUID
 
 from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
@@ -12,12 +12,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import settings
 from src.database.models.users import User
-from src.database.setting import get_db_session
 from src.errors.exception import APIException
 from src.errors.messages import ErrorMessage
+from src.logger.logger import get_logger
 from src.repository.crud.user import UserRepository
 from src.repository.dependencies import get_repository
 from src.schemas.response.token import Token, TokenPayload
+
+logger = get_logger(__name__)
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -58,6 +60,7 @@ def create_access_token(
     # トークンを作る際にidというフィールドも設定できる
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+
     return encoded_jwt
 
 
@@ -77,6 +80,8 @@ async def authenticate(
     access_token = create_access_token(
         subject=user.id, expires_delta=access_token_expires
     )
+
+    logger.info(f"User with ID {user.id} authenticated successfully")
 
     return Token(access_token=access_token)
 
@@ -98,7 +103,6 @@ async def get_current_user(
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         token_data: TokenPayload = TokenPayload(sub=payload.get("sub"))
 
-    # JWTErrorやValidationErrorは表示しないようfrom Noneとしている
     except (JWTError, ValidationError):
         raise APIException(ErrorMessage.CouldNotValidateCredentials)
 

@@ -1,5 +1,6 @@
 from datetime import datetime
-from sqlalchemy import Boolean, String, Text, DateTime
+
+from sqlalchemy import Boolean, DateTime, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.models.base import Base

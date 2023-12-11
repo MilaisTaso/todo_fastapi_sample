@@ -5,11 +5,11 @@ import logging
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from src.core.config import settings
+from src.logger.logger import get_logger
 from src.database.models.base import Base
 
 
-logging.basicConfig()
-logger = logging.getLogger()
+logger = get_logger(__name__)
 
 logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
 

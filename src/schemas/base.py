@@ -15,7 +15,7 @@ class BaseRequestModel(BaseModel):
         extra="ignore",  # 定義していないフィールドの無視
         frozen=True,  # フィールド値の変更を許可しない
         alias_generator=to_camel,  # 各フィールドにキャラメルケースのエイリアスを作成
-        allow_population_by_field_name=True # キャラメルケースで送られてきたリクエストも許可する
+        allow_population_by_field_name=True,  # キャラメルケースで送られてきたリクエストも許可する
     )
 
 
@@ -29,5 +29,5 @@ class BaseResponseModel(BaseModel):
         frozen=True,
         alias_generator=None,
         allow_population_by_field_name=False,
-        from_attributes=True  # 返却値は.model_validateで生成
+        from_attributes=True,  # 返却値は.model_validateで生成
     )

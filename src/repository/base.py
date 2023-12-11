@@ -2,7 +2,7 @@ import abc
 from typing import Any, Dict, Generic, TypeVar
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, select, update, delete
+from sqlalchemy import BinaryExpression, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models.base import Base
@@ -42,7 +42,7 @@ class DatabaseRepository(Generic[Model]):
         if not expressions:
             return None
         stmt = select(self.model).where(*expressions)
-        return (await self.session.scalar(stmt))
+        return await self.session.scalar(stmt)
 
     async def get_instance_list(
         self,

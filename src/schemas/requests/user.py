@@ -24,12 +24,13 @@ class UserRequest(BaseRequestModel):
 
 
 class UserCreateRequest(UserRequest):
-    hashed_password: str = Field(min_length=8, max_length=20) # ハッシュにする前のパスワード
-    
+    hashed_password: str = Field(min_length=8, max_length=20)  # ハッシュにする前のパスワード
+
     # dictへ変換する際にパスワードをハッシュ化する
     @field_serializer("hashed_password")
     def get_hashed_password(self, password: str) -> str:
         return hashed_convert(password)
-    
+
+
 class UserUpdateRequest(UserRequest):
     pass

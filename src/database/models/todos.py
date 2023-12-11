@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.models.base import Base
 
+
 class Todo(Base):
     __tablename__ = "todos"
 

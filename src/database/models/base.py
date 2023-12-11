@@ -1,13 +1,13 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, func, MetaData
+from sqlalchemy import DateTime, MetaData, func
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql.functions import current_timestamp
 
-#カラム等の命名規則
+# カラム等の命名規則
 convention = {
     "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",
@@ -21,6 +21,7 @@ _Base = declarative_base(metadata=metadata)
 
 class Base(_Base):
     """これを継承してモデルを作成すること"""
+
     # 抽象ベースクラスであることの宣言
     __abstract__ = True
 

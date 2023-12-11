@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+
 from pydantic import EmailStr
 
 from src.schemas.base import BaseResponseModel
