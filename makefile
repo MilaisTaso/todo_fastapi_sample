@@ -1,7 +1,7 @@
 RUN_CONTEXT ?= docker compose exec app
 TARGET ?= src
-DB_USER ?= postgres
-DB_NAME ?= sample
+DB_USER ?= developer
+DB_NAME ?= develop
 
 up:
 	docker compose up -d
@@ -26,6 +26,9 @@ db:
 lint:	lint-mypy lint-flake8
 
 fmt:	fmt/.black fmt/.isort
+
+test:
+	${RUN_CONTEXT} poetry run pytest tests/
 
 migrate: 
 	${RUN_CONTEXT} poetry run alembic upgrade head

@@ -11,7 +11,6 @@ class UserResponse(BaseResponseModel):
     first_name: str
     last_name: str
     email: EmailStr
-    email_verified: bool
     hashed_password: str
     is_admin: bool
     deleted_at: Optional[datetime] = None

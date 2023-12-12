@@ -1,4 +1,7 @@
+import os
 from functools import lru_cache
+from pathlib import Path
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -21,8 +24,8 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self) -> str:
         """
-        pydanticが環境変数をロードしてから
-        接続情報を定義しないとエラーになる
+        環境編巣を加工して使うときは
+        pydanticが環境変数をロードしてからでないとエラーになる
         """
         
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
@@ -37,7 +40,12 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     API_GATEWAY_STAGE_PATH: str = "/api"
     SECRET_KEY: str | None = Field(default=None)
-
+    
+    # パスの設定
+    BASE_DIR_PATH: str = str(Path(__file__).parent.parent.absolute()) # src/
+    ROOT_DIR_PATH: str = str(Path(__file__).parent.parent.parent.absolute()) # ./
+    MIGRATIONS_DIR_PATH: str = os.path.join(ROOT_DIR_PATH, "migrations")
+    
     model_config = SettingsConfigDict(
         case_sensitive=True,
         env_file=".env"

@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src import api
 from src.core.config import settings
 from src.logger.logger import get_logger
+from src.schemas.response.message import MessageResponse
 
 # loggerの設定
 logger = get_logger(__name__)
@@ -57,5 +58,5 @@ if settings.DEBUG:
 
 
 @app.get("/", tags=["root"])
-def root() -> Dict[str, str]:
-    return {"application_name": settings.PROJECT_NAME}
+def root() -> MessageResponse:
+    return MessageResponse(message=settings.PROJECT_NAME)

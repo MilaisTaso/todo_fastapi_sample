@@ -8,23 +8,19 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-
 from src.core.config import settings
 
+from src.logger.logger import get_logger
 
-async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+logger = get_logger(__name__)
+
+# enginとsessionの作成
+try:
     engine = create_async_engine(
         settings.DATABASE_URL,
         pool_pre_ping=True,
     )
-    """
-    async_scoped_sessionはスレッドローカルではない
-    そのため、scope_func（コールバック）にセッションのIDを返すことで、
-    どのスレッド（スコープ）で実行するか指定する必要がある
-    current_task()はasyncioの機能で現在のタスク自身のIDを返す
-    それによりスレッドローカルと同じ接続ができるようになる
-    """
-
+    
     AsyncScopedSession = async_scoped_session(
         async_sessionmaker(
             engine,
@@ -33,6 +29,17 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
         ),
         scopefunc=current_task
     )
+except Exception as err:
+    logger.error(f"DB connection failed. detail:{err}")    
+
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+    """
+    async_scoped_sessionはスレッドローカルではない
+    そのため、scope_func（コールバック）にセッションのIDを返すことで、
+    どのスレッド（スコープ）で実行するか指定する必要がある
+    current_task()はasyncioの機能で現在のタスク自身のIDを返す
+    それによりスレッドローカルと同じ接続ができるようになる
+    """
 
     async with AsyncScopedSession() as session:
         try:

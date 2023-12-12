@@ -17,10 +17,9 @@ services:
     image: postgres:15.4
     restart: always
     environment:
-      - POSTGRES_DB=sample
-      - POSTGRES_USER=postgres
+      - POSTGRES_DB=develop
+      - POSTGRES_USER=developer
       - POSTGRES_PASSWORD=password
-    volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
