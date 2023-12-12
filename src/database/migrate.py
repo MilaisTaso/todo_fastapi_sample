@@ -43,7 +43,6 @@ async def drop_all_tables() -> None:
     logger.info("end: drop_all_tables")
 
 
-# コマンドから実行する関数が増えそうならpoeとかでタスク定義をしたようがよさそう
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Database operations")
     parser.add_argument("command", choices=["migrate", "drop"], help="Command to run")

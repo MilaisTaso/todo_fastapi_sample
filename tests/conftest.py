@@ -1,19 +1,22 @@
 import logging
 import os
+
 from collections.abc import AsyncGenerator
-from typing import Any
+from typing import Any, Dict
 
 import alembic.command
 import alembic.config
 import pytest
 import pytest_asyncio
-from app import schemas
-from app.core.config import Settings
-from app.core.database import get_async_db
-from app.main import app
+from pydantic_settings import SettingsConfigDict
+
+from src.schemas.requests.user import UserCreateRequest
+from src.core.config import Settings
+from src.database.setting import get_db_session
+from src.main import app
 from fastapi import status
 from httpx import AsyncClient
-from pytest_mysql import factories
+from pytest_postgresql import factories
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -29,39 +32,35 @@ logger.info("root-conftest")
 
 
 class TestSettings(Settings):
-    """テストのみで使用する設定を記述"""
+    """Settingsクラスを継承し、テスト用の設定を追加"""
+    
+    # テスト用ユーザーのパラメータ
+    TEST_USER_PARAM: Dict[str, Any] = {
+        "first_name": "Test",
+        "last_name": "User",
+        "email": "test@example.com",
+        "password": "password",
+        "is_admin": True
+    }
 
-    TEST_USER_EMAIL: str = "test-user1@example.com"
-    TEST_USER_PASSWORD: str = "test-user"
-    # TEST_SQL_DATA_PATH: str = os.path.join(BASE_DIR_PATH, "tests", "test_data", "dump.sql.gz")
-
-    class Config:
-        env_file = ".env.test"
+    model_config = SettingsConfigDict(
+        env_file=".env.test"
+    )
 
 
 settings = TestSettings()
 
-logger.debug("start:mysql_proc")
-db_proc = factories.mysql_noproc(
+logger.debug("start: postgres_proc")
+db_proc = factories.postgresql_noproc(
     host=settings.DB_HOST,
     port=settings.DB_PORT,
     user=settings.DB_USER_NAME,
 )
-mysql = factories.mysql("db_proc")
-logger.debug("end:mysql_proc")
+postgresql = factories.postgresql("db_proc")
+logger.debug("done: postgres_proc")
 
 
-# TEST_USER_DICT = {
-#     "email": settings.TEST_USER_EMAIL,
-#     "password": settings.TEST_USER_PASSWORD,
-#     "nickname": "test-user",
-# }
-
-TEST_USER_CREATE_SCHEMA = schemas.UserCreate(
-    email=settings.TEST_USER_EMAIL,
-    password=settings.TEST_USER_PASSWORD,
-    full_name="test_user",
-)
+TEST_USER_CREATE_SCHEMA = UserCreateRequest(**settings.TEST_USER_PARAM)
 
 
 def migrate(
@@ -76,9 +75,10 @@ def migrate(
     config.set_main_option("version_locations", versions_path)
     config.set_main_option("script_location", migrations_path)
     config.set_main_option("sqlalchemy.url", uri)
-    # config.set_main_option("is_test", "1")
-    if connection is not None:
+
+    if connection:
         config.attributes["connection"] = connection
+
     alembic.command.upgrade(config, revision)
 
 

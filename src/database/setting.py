@@ -13,7 +13,10 @@ from src.core.config import settings
 
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
-    engine = create_async_engine(settings.DATABASE_URL)
+    engine = create_async_engine(
+        settings.DATABASE_URL,
+        pool_pre_ping=True,
+    )
     """
     async_scoped_sessionはスレッドローカルではない
     そのため、scope_func（コールバック）にセッションのIDを返すことで、
@@ -23,7 +26,12 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """
 
     AsyncScopedSession = async_scoped_session(
-        async_sessionmaker(engine), scopefunc=current_task
+        async_sessionmaker(
+            engine,
+            autocommit=False,
+            autoflush=False,
+        ),
+        scopefunc=current_task
     )
 
     async with AsyncScopedSession() as session:
