@@ -91,7 +91,15 @@ async def run_async_migrations() -> None:
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
 
-    asyncio.run(run_async_migrations())
+    try:
+        # 現在実行中のイベントループを取得
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        # イベントループが実行中でない場合、asyncio.run() を使用
+        asyncio.run(run_async_migrations())
+    else:
+        # イベントループが既に実行中の場合、そのループで実行
+        loop.run_until_complete(run_async_migrations())
 
 
 if context.is_offline_mode():

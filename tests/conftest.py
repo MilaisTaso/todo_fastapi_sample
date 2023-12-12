@@ -95,15 +95,13 @@ async def engine(
         poolclass=NullPool
     )
 
-    with engine.begin() as conn:
-        migrate(
-            migrations_path=settings.MIGRATIONS_DIR_PATH,
-            versions_path=os.path.join(settings.MIGRATIONS_DIR_PATH, "versions"),
-            alembic_ini_path=os.path.join(settings.ROOT_DIR_PATH, "alembic.ini"),
-            connection=conn,
-            uri=url,
-        )
-        logger.debug("done: migrations")
+    migrate(
+        migrations_path=settings.MIGRATIONS_DIR_PATH,
+        versions_path=os.path.join(settings.MIGRATIONS_DIR_PATH, "versions"),
+        alembic_ini_path=os.path.join(settings.ROOT_DIR_PATH, "alembic.ini"),
+        uri=url,
+    )
+    logger.debug("done: migrations")
 
     return engine
 
