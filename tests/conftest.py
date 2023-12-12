@@ -1,6 +1,6 @@
 import logging
 import os
-from asyncio import current_task
+import asyncio
 
 from collections.abc import AsyncGenerator
 from typing import Any, Dict
@@ -63,15 +63,13 @@ logger.debug("done: postgres_proc")
 
 #alembicを使ってマイグレーションを行う
 def migrate(
-    versions_path: str,
+    alembic_ini_path: str,
     migrations_path: str,
     uri: str,
-    alembic_ini_path: str,
     connection: Any = None,
-    revision: str = "head",
+    revision: str = "head"
 ) -> None:
     config = alembic.config.Config(alembic_ini_path)
-    config.set_main_option("version_locations", versions_path)
     config.set_main_option("script_location", migrations_path)
     config.set_main_option("sqlalchemy.url", uri)
 
@@ -94,13 +92,17 @@ async def engine(
         echo=False,
         poolclass=NullPool
     )
+    
+    loop = asyncio.get_event_loop()
 
-    migrate(
-        migrations_path=settings.MIGRATIONS_DIR_PATH,
-        versions_path=os.path.join(settings.MIGRATIONS_DIR_PATH, "versions"),
-        alembic_ini_path=os.path.join(settings.ROOT_DIR_PATH, "alembic.ini"),
-        uri=url,
+    await loop.run_in_executor(
+        None,  # None はデフォルトの実行プログラムを使用することを意味します
+        migrate,  # 実行する関数 下記が引数
+        "alembic.ini",
+        "migrations",
+        url
     )
+
     logger.debug("done: migrations")
 
     return engine
@@ -117,7 +119,7 @@ async def client(engine: AsyncEngine) -> AsyncClient:
             autocommit=False,
             autoflush=False,
         ),
-        scopefunc=current_task
+        scopefunc=asyncio.current_task
     )
 
     async def override_get_db_session() -> AsyncGenerator[AsyncSession, None]:
@@ -132,11 +134,11 @@ async def client(engine: AsyncEngine) -> AsyncClient:
 
 
 @pytest_asyncio.fixture
-async def authed_client(client: AsyncClient) -> AsyncClient:
-    """fixture: clietnに認証情報をセット"""
-    logger.debug("fixture:authed_headers")
+async def auth_client(client: AsyncClient) -> AsyncClient:
+    """fixture: AsyncClientに認証情報をセット"""
+    logger.debug("access: authentication")
     res = await client.post(
-        "/users",
+        "/user",
         json=settings.TEST_USER_PARAM,
     )
     assert res.status_code == status.HTTP_200_OK
