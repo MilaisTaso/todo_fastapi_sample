@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     RUN_ENV: str = Field(default="local")
     PROJECT_NAME: str = "todo_fastapi"
     DEBUG: bool = Field(default=False)
+    
+    BASE_URL: str = Field(default="http://localhost:8000")
 
     # データベース接続情報
     DB_USER: str | None = Field(default=None)
@@ -30,6 +32,7 @@ class Settings(BaseSettings):
         
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
+    
     # CORS 適時追加すること
     ORIGIN_RESOURCES: list[str] = [
         "http://localhost:8000",
@@ -40,12 +43,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     API_GATEWAY_STAGE_PATH: str = "/api"
     SECRET_KEY: str | None = Field(default=None)
-    
-    # パスの設定
-    BASE_DIR_PATH: str = str(Path(__file__).parent.parent.absolute()) # src/
-    ROOT_DIR_PATH: str = str(Path(__file__).parent.parent.parent.absolute()) # ./
-    MIGRATIONS_DIR_PATH: str = os.path.join(ROOT_DIR_PATH, "migrations")
-    
+
     model_config = SettingsConfigDict(
         case_sensitive=True,
         env_file=".env"

@@ -73,6 +73,7 @@ def migrate(
     config.set_main_option("script_location", migrations_path)
     config.set_main_option("sqlalchemy.url", uri)
 
+    # 同期エンジンとコンテキストマネージャーを使用する場合はセッション情報を置きなえる
     if connection:
         config.attributes["connection"] = connection
 
@@ -130,33 +131,32 @@ async def client(engine: AsyncEngine) -> AsyncClient:
     # get_dbをTest用のDBを使用するようにoverrideする
     app.dependency_overrides[get_db_session] = override_get_db_session
     app.debug = False
-    return AsyncClient(app=app, base_url="http://test")
+    return AsyncClient(app=app)
 
 
 @pytest_asyncio.fixture
 async def auth_client(client: AsyncClient) -> AsyncClient:
-    """fixture: AsyncClientに認証情報をセット"""
+    """AsyncClientに認証ヘッダーを付与する"""
     logger.debug("access: authentication")
-    res = await client.post(
-        "/user",
+    
+    response = await client.get("/")
+    assert response.status_code == 200
+    
+    response = await client.post(
+        "/api/user",
         json=settings.TEST_USER_PARAM,
     )
-    assert res.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK
 
-    res = await client.post(
-        "/auth/login",
+    response = await client.post(
+        "/api/auth/login",
         data={
             "username": settings.TEST_USER_PARAM.get("email"),
             "password": settings.TEST_USER_PARAM.get("hashed_password"),
         },
     )
-    assert res.status_code == status.HTTP_200_OK
-    access_token = res.json().get("access_token")
+    assert response.status_code == status.HTTP_200_OK
+    access_token = response.json().get("access_token")
     client.headers = {"authorization": f"Bearer {access_token}"}
-
-    # テスト全体で使用するので、グローバル変数とする
-    res = await client.get("users/me")
-    assert res.json().get("id")
-    pytest.USER_ID = res.json().get("id")
 
     return client
