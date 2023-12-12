@@ -1,10 +1,13 @@
 from typing import Any
+
 from fastapi import HTTPException, status
 
 from src.errors.messages import BaseMessage
 
+
 class APIException(HTTPException):
     """実際に返す例外を定めたクラス."""
+
 
 class APIException(HTTPException):
     """API例外."""

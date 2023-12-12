@@ -24,7 +24,7 @@ class ErrorMessage:
         Class呼び出し時にClass名がエラーコードになり、.textでエラーメッセージも取得できるため
         エラーコードと、メッセージの管理が直感的に行える。
     ----
-    
+
     """
 
     # 共通
@@ -59,7 +59,7 @@ class ErrorMessage:
     class CouldNotValidateCredentials(BaseMessage):
         status_code = status.HTTP_403_FORBIDDEN
         text = "ユーザー認証に失敗しました"
-        
+
     class AlreadyUserDeleted(BaseMessage):
         status_code = status.HTTP_404_NOT_FOUND
         text = "すでに退会済みのユーザーです"

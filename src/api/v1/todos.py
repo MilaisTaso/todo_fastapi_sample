@@ -11,8 +11,8 @@ from src.errors.messages import ErrorMessage
 from src.repository.crud.todo import TodoRepository
 from src.repository.dependencies import get_repository
 from src.schemas.requests.todo import TodoCreateRequest, TodoUpdateRequest
-from src.schemas.response.todo import TodoResponse
 from src.schemas.response.message import MessageResponse
+from src.schemas.response.todo import TodoResponse
 
 router = APIRouter()
 
@@ -43,7 +43,7 @@ async def get_todos(todo_repo: todo_repository) -> List[TodoResponse]:
 @router.get("/{id}", status_code=status.HTTP_200_OK)
 async def get_todo(id: UUID, todo_repo: todo_repository) -> TodoResponse:
     todo = await todo_repo.get_instance_by_id(id)
-    
+
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
 
@@ -55,7 +55,7 @@ async def update_todo(
     id: UUID,
     todo_repo: todo_repository,
     current_user: Annotated[User, Security(get_current_user)],
-    body: TodoUpdateRequest = Body()
+    body: TodoUpdateRequest = Body(),
 ) -> TodoResponse:
     todo = await todo_repo.get_instance_by_id(id)
     if not todo:
@@ -72,12 +72,12 @@ async def update_todo(
 async def delete_todo(
     id: UUID,
     todo_repo: todo_repository,
-    current_user: Annotated[User, Security(get_current_user)]
+    current_user: Annotated[User, Security(get_current_user)],
 ) -> MessageResponse:
     todo = await todo_repo.get_instance_by_id(id)
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
-    
+
     if not current_user.is_admin and todo.user_id != current_user.id:
         raise APIException(ErrorMessage.PERMISSION_ERROR("消去"))
 
