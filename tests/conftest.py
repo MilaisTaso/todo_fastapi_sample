@@ -6,7 +6,6 @@ from typing import Any, Dict
 
 import alembic.command
 import alembic.config
-import pytest
 import pytest_asyncio
 from pydantic_settings import SettingsConfigDict
 
@@ -112,6 +111,24 @@ async def engine(
 
     return engine
 
+
+@pytest_asyncio.fixture
+async def db(engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
+    "テストケース用のデータを作成する際に使用するDBセッション"
+    logger.debug("start: Database session")
+
+    TestAsyncScopedSession = async_scoped_session(
+        async_sessionmaker(
+            engine,
+            autocommit=False,
+            autoflush=False,
+        ),
+        scopefunc=asyncio.current_task
+    )
+    
+    async with TestAsyncScopedSession() as session:
+        yield session
+        await session.commit()    
 
 @pytest_asyncio.fixture
 async def client(engine: AsyncEngine) -> AsyncClient:
