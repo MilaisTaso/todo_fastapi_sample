@@ -11,7 +11,7 @@ from src.schemas.response.todo import TodoResponse
 
 
 @pytest_asyncio.fixture
-async def todos(db: Session, user_id: UUID) -> List[TodoResponse]:
+async def todo(db: Session, user_id: UUID) -> TodoResponse:
     now = datetime.datetime.now()
     todo_data = [
         {
@@ -26,14 +26,8 @@ async def todos(db: Session, user_id: UUID) -> List[TodoResponse]:
     await db.execute(insert(Todo), todo_data)
     await db.commit()
 
-    # insesrt...returningを使用したがうまくいかなかった
+    # insert...returningを使用したがうまくいかなかった
     result = await db.execute(select(Todo))
     todos = result.scalars().all()
 
-    return [TodoResponse.model_validate(todo) for todo in todos]
-
-
-@pytest_asyncio.fixture
-async def todo_id(todos: List[TodoResponse]) -> UUID:
-
-    return todos[0].id
+    return TodoResponse.model_validate(todos[0])
