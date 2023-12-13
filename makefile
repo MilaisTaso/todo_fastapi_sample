@@ -18,10 +18,10 @@ delete:
 log:
 	docker compose logs -f app
 
-restart:	down up
-
 db:
 	docker compose exec db psql -U ${DB_USER} -d ${DB_NAME}
+
+restart:	down up
 
 lint:	lint-mypy lint-flake8
 

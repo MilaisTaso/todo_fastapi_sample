@@ -15,8 +15,6 @@ logger = get_logger(__name__)
 
 # pythonのlogging.filterを継承したクラス
 # swigger(/docs)自体のログを非表示にする
-
-
 class NoParsingFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         return not record.getMessage().find("/docs") >= 0
@@ -24,7 +22,6 @@ class NoParsingFilter(logging.Filter):
 
 # uvicornのログに対して上記を適応
 logging.getLogger("uvicorn.access").addFilter(NoParsingFilter())
-
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -41,6 +38,8 @@ app.add_middleware(
     # allow_origin_regex=r"^https?:\/\/([\w\-\_]{1,}\.|)example\.com",
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=["*"]
+    
 )
 
 # 各エンドポイントの追加は各ディレクトリの__init__.pyへ

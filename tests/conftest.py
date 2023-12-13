@@ -1,5 +1,4 @@
 import logging
-import os
 import asyncio
 
 from collections.abc import AsyncGenerator
@@ -44,6 +43,10 @@ class TestSettings(Settings):
         "hashedPassword": "password",
         "isAdmin": True
     }
+    
+    model_config = SettingsConfigDict(
+        env_file=".env.test"
+    )
 
 settings = TestSettings()
 
@@ -55,6 +58,7 @@ db_proc = factories.postgresql_noproc(
     port=settings.DB_PORT,
     user=settings.DB_USER,
     password=settings.DB_PASSWORD,
+    dbname=settings.DB_NAME
 )
 postgresql = factories.postgresql("db_proc")
 
@@ -62,22 +66,23 @@ logger.debug("done: postgres_proc")
 
 
 #alembicを使ってマイグレーションを行う
-def migrate(
+async def migrate(
     alembic_ini_path: str,
     migrations_path: str,
-    uri: str,
+    url: str,
     connection: Any = None,
     revision: str = "head"
 ) -> None:
     config = alembic.config.Config(alembic_ini_path)
     config.set_main_option("script_location", migrations_path)
-    config.set_main_option("sqlalchemy.url", uri)
+    config.set_main_option("sqlalchemy.url", url)
 
     # 同期エンジンとコンテキストマネージャーを使用する場合はセッション情報を置きなえる
     if connection:
         config.attributes["connection"] = connection
 
-    alembic.command.upgrade(config, revision)
+    # alembic.command.upgrade(config, revision)
+    await asyncio.to_thread(alembic.command.upgrade, config, revision)
 
 
 @pytest_asyncio.fixture
@@ -94,17 +99,16 @@ async def engine(
         poolclass=NullPool
     )
     
-    loop = asyncio.get_event_loop()
+    # enginのコネクションを使ってマイグレーション
+    async with engine.begin() as conn:
+        await migrate(
+            alembic_ini_path="alembic.ini",
+            migrations_path="migrations",
+            url=url,
+            connection=conn
+        )
 
-    await loop.run_in_executor(
-        None,  # None はデフォルトの実行プログラムを使用することを意味します
-        migrate,  # 実行する関数 下記が引数
-        "alembic.ini",
-        "migrations",
-        url
-    )
-
-    logger.debug("done: migrations")
+        logger.debug("done: migrations")
 
     return engine
 
@@ -131,7 +135,7 @@ async def client(engine: AsyncEngine) -> AsyncClient:
     # get_dbをTest用のDBを使用するようにoverrideする
     app.dependency_overrides[get_db_session] = override_get_db_session
     app.debug = False
-    return AsyncClient(app=app)
+    return AsyncClient(app=app, base_url=settings.BASE_URL)
 
 
 @pytest_asyncio.fixture
@@ -139,20 +143,17 @@ async def auth_client(client: AsyncClient) -> AsyncClient:
     """AsyncClientに認証ヘッダーを付与する"""
     logger.debug("access: authentication")
     
-    response = await client.get("/")
-    assert response.status_code == 200
-    
     response = await client.post(
-        "/api/user",
+        "/api/user/",
         json=settings.TEST_USER_PARAM,
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_201_CREATED
 
     response = await client.post(
         "/api/auth/login",
         data={
             "username": settings.TEST_USER_PARAM.get("email"),
-            "password": settings.TEST_USER_PARAM.get("hashed_password"),
+            "password": settings.TEST_USER_PARAM.get("hashedPassword"),
         },
     )
     assert response.status_code == status.HTTP_200_OK

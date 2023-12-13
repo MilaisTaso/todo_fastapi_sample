@@ -34,4 +34,4 @@ RUN apt update -yqq && \
     rm -rf /var/lib/apt/lists/*
 
 # uvicornのサーバーを立ち上げる
-ENTRYPOINT ["poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--reload", "--log-config", "./src/logger/logger_config.yaml", "--reload-exclude", "'.#*'"]
+ENTRYPOINT ["poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--reload", "--log-config", "./src/logger/logger_config.yaml", "--reload-exclude", "'.#*'", "--forwarded-allow-ips", "*"]
