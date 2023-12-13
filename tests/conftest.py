@@ -2,7 +2,7 @@ import logging
 import asyncio
 
 from collections.abc import AsyncGenerator
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 from uuid import UUID
 
 import alembic.command
@@ -52,7 +52,6 @@ class TestSettings(Settings):
 
 settings = TestSettings()
 
-logger.debug("start: postgres_proc")
 
 # テスト用データベースの作成 権限のあるユーザーでないと作成できない
 db_proc = factories.postgresql_noproc(
@@ -63,8 +62,6 @@ db_proc = factories.postgresql_noproc(
     dbname=settings.DB_NAME
 )
 postgresql = factories.postgresql("db_proc")
-
-logger.debug("done: postgres_proc")
 
 
 #alembicを使ってマイグレーションを行う
@@ -88,11 +85,9 @@ async def migrate(
 
 
 @pytest_asyncio.fixture
-async def engine(
-    postgresql: Any,
-) -> AsyncEngine:
+async def engine(postgresql: Any) -> AsyncEngine:
     """engineの作成及びマイグレーションの実行"""
-    logger.debug("start: create engine")
+
     url: str = settings.DATABASE_URL
 
     engine = create_async_engine(
@@ -110,22 +105,20 @@ async def engine(
             connection=conn
         )
 
-        logger.debug("done: migrations")
-
     return engine
 
 
 @pytest_asyncio.fixture
 async def db(engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
     "テストケース用のデータを作成する際に使用するDBセッション"
-    logger.debug("start: Database session")
 
     TestAsyncScopedSession = async_scoped_session(
         async_sessionmaker(
             engine,
             autocommit=False,
             autoflush=False,
-        ),
+            class_=AsyncSession
+            ),
         scopefunc=asyncio.current_task
     )
     
@@ -136,13 +129,13 @@ async def db(engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
 @pytest_asyncio.fixture
 async def client(engine: AsyncEngine) -> AsyncClient:
     """HTTP-Clientの作成"""
-    logger.debug("start:create AsyncClient")
     
     TestAsyncScopedSession = async_scoped_session(
         async_sessionmaker(
             engine,
             autocommit=False,
             autoflush=False,
+            class_=AsyncSession
         ),
         scopefunc=asyncio.current_task
     )
@@ -161,7 +154,6 @@ async def client(engine: AsyncEngine) -> AsyncClient:
 @pytest_asyncio.fixture
 async def auth_client(client: AsyncClient) -> AsyncClient:
     """AsyncClientに認証ヘッダーを付与する"""
-    logger.debug("access: authentication")
     
     response = await client.post(
         "/api/user/",
@@ -185,10 +177,7 @@ async def auth_client(client: AsyncClient) -> AsyncClient:
 
 @pytest_asyncio.fixture
 async def user_id(auth_client: AsyncClient) -> UUID:
-    response = await auth_client.post(
-        "/api/user/me",
-        json=settings.TEST_USER_PARAM
-    )
+    response = await auth_client.get("/api/user/me")
     
     user_id = response.json().get("id")
     return user_id
