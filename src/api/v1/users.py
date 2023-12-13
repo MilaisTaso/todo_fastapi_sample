@@ -17,6 +17,12 @@ router = APIRouter()
 user_repository = Annotated[UserRepository, Depends(get_repository(UserRepository))]
 
 
+@router.get("/me")
+async def get_user_me(
+    current_user: User = Depends(get_current_user),
+) -> UserResponse:
+    return UserResponse.model_validate(current_user)
+
 @router.get(
     "/{id}", dependencies=[Security(get_current_user)], status_code=status.HTTP_200_OK
 )

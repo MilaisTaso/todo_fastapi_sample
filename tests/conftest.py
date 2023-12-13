@@ -2,7 +2,8 @@ import logging
 import asyncio
 
 from collections.abc import AsyncGenerator
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
+from uuid import UUID
 
 import alembic.command
 import alembic.config
@@ -32,7 +33,6 @@ logger = logging.getLogger(__name__)
 # テストレコード作成等に必要
 logger.info("root-conftest")
 
-pytest.USER_ID = ""
 
 class TestSettings(Settings):
     """Settingsクラスを継承し、テスト用の設定を追加"""
@@ -165,10 +165,9 @@ async def auth_client(client: AsyncClient) -> AsyncClient:
     
     response = await client.post(
         "/api/user/",
-        json=settings.TEST_USER_PARAM,
+        json=settings.TEST_USER_PARAM
     )
-    assert response.status_code == status.HTTP_201_CREATED    
-    pytest.USER_ID = response.json().get("id")
+    assert response.status_code == status.HTTP_201_CREATED
 
     response = await client.post(
         "/api/auth/login",
@@ -182,3 +181,14 @@ async def auth_client(client: AsyncClient) -> AsyncClient:
     client.headers = {"authorization": f"Bearer {access_token}"}
 
     return client
+
+
+@pytest_asyncio.fixture
+async def user_id(auth_client: AsyncClient) -> UUID:
+    response = await auth_client.post(
+        "/api/user/me",
+        json=settings.TEST_USER_PARAM
+    )
+    
+    user_id = response.json().get("id")
+    return user_id
