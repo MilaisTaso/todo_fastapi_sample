@@ -6,6 +6,7 @@ from typing import Any, Dict
 
 import alembic.command
 import alembic.config
+import pytest
 import pytest_asyncio
 from pydantic_settings import SettingsConfigDict
 
@@ -28,8 +29,10 @@ from sqlalchemy.ext.asyncio import (
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+# テストレコード作成等に必要
 logger.info("root-conftest")
 
+pytest.USER_ID = ""
 
 class TestSettings(Settings):
     """Settingsクラスを継承し、テスト用の設定を追加"""
@@ -164,7 +167,8 @@ async def auth_client(client: AsyncClient) -> AsyncClient:
         "/api/user/",
         json=settings.TEST_USER_PARAM,
     )
-    assert response.status_code == status.HTTP_201_CREATED
+    assert response.status_code == status.HTTP_201_CREATED    
+    pytest.USER_ID = response.json().get("id")
 
     response = await client.post(
         "/api/auth/login",
