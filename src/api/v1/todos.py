@@ -19,21 +19,6 @@ router = APIRouter()
 todo_repository = Annotated[TodoRepository, Depends(get_repository(TodoRepository))]
 
 
-@router.post(
-    "/",
-    status_code=status.HTTP_201_CREATED,
-)
-async def create_todo(
-    todo_repo: todo_repository,
-    user: Annotated[User, Security(get_current_user)],
-    body: TodoCreateRequest = Body(),
-) -> TodoResponse:
-    body.user_id = user.id
-    todo: Todo = await todo_repo.create(body.model_dump())
-
-    return TodoResponse.model_validate(todo)
-
-
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_todos(todo_repo: todo_repository) -> List[TodoResponse]:
     todos: List[Todo] = await todo_repo.get_instance_list()
@@ -46,6 +31,21 @@ async def get_todo(id: UUID, todo_repo: todo_repository) -> TodoResponse:
 
     if not todo:
         raise APIException(ErrorMessage.ID_NOT_FOUND)
+
+    return TodoResponse.model_validate(todo)
+
+
+@router.post(
+    "/",
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_todo(
+    todo_repo: todo_repository,
+    user: Annotated[User, Security(get_current_user)],
+    body: TodoCreateRequest = Body(),
+) -> TodoResponse:
+    body.user_id = user.id
+    todo: Todo = await todo_repo.create(body.model_dump())
 
     return TodoResponse.model_validate(todo)
 
