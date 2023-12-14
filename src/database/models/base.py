@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import DateTime, MetaData, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, declarative_base
+from sqlalchemy.orm import DeclarativeBase, Mapped, declarative_base, mapped_column
 from sqlalchemy.sql.functions import current_timestamp
 
 # カラム等の命名規則
@@ -15,7 +15,7 @@ convention = {
     "pk": "pk_%(table_name)s",
 }
 metadata = MetaData(naming_convention=convention)
-_Base = declarative_base(metadata=metadata)
+_Base: DeclarativeBase = declarative_base(metadata=metadata)
 
 
 class Base(_Base):

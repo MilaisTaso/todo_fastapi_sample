@@ -1,8 +1,7 @@
-import abc
 from typing import Any, Dict, Generic, TypeVar
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, delete, select, update
+from sqlalchemy import BinaryExpression, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models.base import Base
@@ -26,7 +25,7 @@ class DatabaseRepository(Generic[Model]):
 
     async def update(self, instance: Model, data: Dict[str, Any]) -> Model:
         for key, value in data.items():
-            # valueがNone更新するので注意
+            # valueがNoneでも更新するので注意
             if not hasattr(instance, key):
                 continue
             setattr(instance, key, value)
@@ -37,7 +36,7 @@ class DatabaseRepository(Generic[Model]):
         return instance
 
     async def get_instance_by_id(self, id: UUID) -> Model | None:
-        """get()は主キーに基づいたインスタンスを返す"""
+        # get()は主キーに基づいたインスタンスを返す
         return await self.session.get(self.model, id)
 
     async def get_instance(self, *expressions: BinaryExpression) -> Model | None:

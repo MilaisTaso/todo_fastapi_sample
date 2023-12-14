@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
-from uuid import UUID
 
 from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
@@ -8,7 +7,6 @@ from jose import jwt
 from jose.exceptions import JWTError
 from passlib.context import CryptContext
 from pydantic import ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.config import settings
 from src.database.models.users import User

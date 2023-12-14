@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from src.core.config import settings
 
+from src.core.config import settings
 from src.logger.logger import get_logger
 
 logger = get_logger(__name__)
@@ -20,17 +20,18 @@ try:
         settings.DATABASE_URL,
         pool_pre_ping=True,
     )
-    
+
     AsyncScopedSession = async_scoped_session(
         async_sessionmaker(
             engine,
             autocommit=False,
             autoflush=False,
         ),
-        scopefunc=current_task
+        scopefunc=current_task,
     )
 except Exception as err:
-    logger.error(f"DB connection failed. detail:{err}")    
+    logger.error(f"DB connection failed. detail:{err}")
+
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """

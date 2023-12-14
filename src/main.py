@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 
 from debug_toolbar.middleware import DebugToolbarMiddleware
 from fastapi import FastAPI
@@ -12,6 +11,7 @@ from src.schemas.response.message import MessageResponse
 
 # loggerの設定
 logger = get_logger(__name__)
+
 
 # pythonのlogging.filterを継承したクラス
 # swigger(/docs)自体のログを非表示にする
@@ -38,8 +38,7 @@ app.add_middleware(
     # allow_origin_regex=r"^https?:\/\/([\w\-\_]{1,}\.|)example\.com",
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_credentials=["*"]
-    
+    allow_credentials=["*"],
 )
 
 # 各エンドポイントの追加は各ディレクトリの__init__.pyへ

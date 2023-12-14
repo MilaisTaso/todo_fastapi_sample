@@ -23,6 +23,7 @@ async def get_user_me(
 ) -> UserResponse:
     return UserResponse.model_validate(current_user)
 
+
 @router.get(
     "/{id}", dependencies=[Security(get_current_user)], status_code=status.HTTP_200_OK
 )

@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     RUN_ENV: str = Field(default="local")
     PROJECT_NAME: str = "todo_fastapi"
     DEBUG: bool = Field(default=False)
-    
+
     BASE_URL: str = Field(default="http://localhost:8000")
 
     # データベース接続情報
@@ -27,10 +27,10 @@ class Settings(BaseSettings):
         環境編巣を加工して使うときは
         pydanticが環境変数をロードしてからでないとエラーになる
         """
-        
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
-    
+        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@"\
+                f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
     # CORS 適時追加すること
     ORIGIN_RESOURCES: list[str] = [
         "http://localhost:8000",
@@ -42,14 +42,13 @@ class Settings(BaseSettings):
     API_GATEWAY_STAGE_PATH: str = "/api"
     SECRET_KEY: str | None = Field(default=None)
 
-    model_config = SettingsConfigDict(
-        case_sensitive=True,
-        env_file=".env"
-    )
+    model_config = SettingsConfigDict(case_sensitive=True, env_file=".env")
+
 
 # 関数の結果をキャッシュしてくれる 高速な呼び出しが可能に
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
 
 settings = get_settings()

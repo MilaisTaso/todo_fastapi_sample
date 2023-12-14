@@ -2,15 +2,9 @@ from typing import Any
 
 from fastapi import HTTPException, status
 
-from src.errors.messages import BaseMessage
-
 
 class APIException(HTTPException):
-    """実際に返す例外を定めたクラス."""
-
-
-class APIException(HTTPException):
-    """API例外."""
+    """"実際に返す例外を定めたクラス"""
 
     default_status_code = status.HTTP_400_BAD_REQUEST
 

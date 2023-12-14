@@ -23,7 +23,7 @@ class TodoUpdateRequest(TodoRequest):
 
     # データベースのカラムはDatetime型なのでmodel_validate()で必ず変換すること
     @field_serializer("completed_at")
-    def insert_complete_datetime(self, is_completed) -> datetime | None:
+    def insert_complete_datetime(self, is_completed: bool) -> datetime | None:
         if is_completed:
             return datetime.now()
 
