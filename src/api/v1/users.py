@@ -25,7 +25,9 @@ async def get_user_me(
 
 
 @router.get(
-    "/{id}", dependencies=[Security(get_current_user)], status_code=status.HTTP_200_OK
+    "/{id}",
+    dependencies=[Security(get_current_user, scopes=["admin"])],
+    status_code=status.HTTP_200_OK
 )
 async def get_user(id: UUID, user_repo: user_repository) -> UserResponse:
     user = await user_repo.get_instance_by_id(id)

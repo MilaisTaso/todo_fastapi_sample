@@ -89,4 +89,24 @@ FastAPIを使用した学習やちょっとしたアプリの作成に使用可�
     `-- conftest.py
 ```
 
-## 機能
+## 大まかな機能
+
+### DBレコードの作成・取得・更新・削除(CRUD)
+
+SQLAlchemyのv2をベースに実装しています。<br>
+repository/base.py に データベース操作の共通のクラスを実装していますので、<br>
+データベース操作を行うクラスは、此方を継承して個別に処理を追加してください。
+
+
+### ユーザー認証と権限(Scopes)
+
+ユーザー認証が必要なエンドポイントには下記のように依存関係を注入します。<br>
+また特定の権限を持つユーザーのみアクセスできるようにするには、scopesに適切な値を設定します。
+
+```python
+@router.get(
+    "/{id}",
+    dependencies=[Security(get_current_user, scopes=["admin"])],
+    status_code=status.HTTP_200_OK
+)
+```

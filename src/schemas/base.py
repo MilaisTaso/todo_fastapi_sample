@@ -2,12 +2,12 @@
 from datetime import datetime
 from uuid import UUID
 
-from humps import camel
+from humps
 from pydantic import BaseModel, ConfigDict
 
-
+#
 def to_camel(string: str) -> str:
-    return camel.case(string)
+    return humps.camelize(string)
 
 
 class BaseRequestModel(BaseModel):
