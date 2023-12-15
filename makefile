@@ -12,7 +12,7 @@ build: #起動 + ビルド
 down: #停止（コンテナ削除）
 	docker compose down
 
-destory: # コンテナ, image, volumeすべて消去 
+destroy: # コンテナ, image, volumeすべて消去 
 	docker-compose down --rmi all --volumes --remove-orphans
 
 log: # uvicornのログ確認

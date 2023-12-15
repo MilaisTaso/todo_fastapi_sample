@@ -11,6 +11,10 @@ FastAPIを使用した学習やちょっとしたアプリの作成に使用可�
 
 ## 使用方法
 
+.env.example を.env にリネームしてください。
+必要に応じて環境変数を変更して下さい。
+SECRET_KEYはpoetryでライブラリをインストールした後、opensslで生成すると楽です。
+
 下記コマンドにて環境構築が可能です。
 
 ```bash
@@ -23,11 +27,14 @@ make up
 make migrate
 ```
 
-開発時にコード補完を有効にしたい場合は、ローカル環境にpython, poetryをインストールし、
-```bash
-poetry install
+下記URLでSwagger UIにアクセスできます。
+
 ```
-にてローカルの仮想環境にもライブラリをインストールして下さい。
+ttp://localhost:8000/docs
+```
+
+開発時にコード補完を有効にしたい場合は、ローカル環境にpython, poetryをインストールし、
+`poetry install`にてローカルの仮想環境にもライブラリをインストールして下さい。
 VS Codeの場合はpylanceがあれば、コード補完が有効になるはずです。
 
 その他使用方法についてはmakefileを確認してください
