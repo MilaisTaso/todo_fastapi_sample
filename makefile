@@ -3,41 +3,41 @@ TARGET ?= src
 DB_USER ?= developer
 DB_NAME ?= develop
 
-up:
+up: #起動
 	docker compose up -d
 
-build:
+build: #起動 + ビルド
 	docker compose up -d --build
 
-down:
+down: #停止（コンテナ削除）
 	docker compose down
 
-delete:
+destory: # コンテナ, image, volumeすべて消去 
 	docker-compose down --rmi all --volumes --remove-orphans
 
-log:
+log: # uvicornのログ確認
 	docker compose logs -f app
 
-db:
+db: # データベースとの接続
 	docker compose exec db psql -U ${DB_USER} -d ${DB_NAME}
 
-restart:	down up
+restart:	down up # コンテナの再起動
 
-lint:	lint-mypy lint-flake8
+lint:	lint-mypy lint-flake8 # linterの実行
 
-fmt:	fmt/.black fmt/.isort
+fmt:	fmt/.black fmt/.isort # formatterの実行
 
-test:
+test: # テストの実行
 	${RUN_CONTEXT} poetry run pytest tests/
 
-migrate: 
+migrate: # マイグレーションの実行
 	${RUN_CONTEXT} poetry run alembic upgrade head
 # alembic不使用時: ${RUN_CONTEXT} poetry run python src/database/migrate.py migrate
 
-drop:	
+drop:	# テーブルの消去
 	${RUN_CONTEXT} poetry run python src/database/migrate.py drop
 
-shell:
+shell: # appコンテナと接続
 	${RUN_CONTEXT} bash
 
 # 詳細-------------------------------------

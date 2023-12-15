@@ -46,8 +46,6 @@ class ErrorMessage:
     class ALREADY_REGISTED_EMAIL(BaseMessage):
         text = "登録済のメールアドレスです"
 
-    class INCORRECT_CURRENT_PASSWORD(BaseMessage):
-        text = "現在のパスワードが間違っています"
 
     class INCORRECT_EMAIL_OR_PASSWORD(BaseMessage):
         status_code = status.HTTP_403_FORBIDDEN
